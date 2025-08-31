@@ -37,6 +37,30 @@ app.post('/todo',(req,res)=>{
     res.status(200).send("Added successfuly")
 })
 
+app.put('/todo/update', (req, res) => {
+    const { id, name, priority } = req.body;
+
+    const todo = todos.find(t => t.id == id);
+    if (!todo) {
+        return res.status(404).send("Todo not found");
+    }
+
+    todo.name = name;
+    todo.priority = priority;
+
+    res.status(200).send( "Updated successfully" );
+});
+
+app.delete('/todo/delete',(req,res)=>{
+    const {id} = req.body
+    const exist = todos.some(todo => todo.id==id)
+    if(!exist){
+        res.status(404).send("task not found")
+    }
+    todos=todos.filter(t => t.id != id)
+    res.status(200).send("Deleted successfully")
+})
+
 app.listen(port,()=>{
     console.log(`server is running at ${port}`)
 })
