@@ -1,67 +1,29 @@
-const express = require("express")
-const app = express()
-const port = 5502;
+const express = require('express');
+const mongoose = require('mongoose');
+const Todo = require('./todo'); // import schema
+
+const app = express();
 app.use(express.json());
 
-let todos = [
-    {
-        id : 1,
-        name:"water plants",
-        priority: "if won't mom will kill u"
-    },
-    {
-        id:2,
-        name:"clean house",
-        priority:"same a last"
-    },
-    {
-        id:3,
-        name:"study for exam",
-        priority:"optional"
-    }
-]
+// DB connection
+mongoose.connect("mongodb+srv://sanjai_db_user:yvOhfgYowDbobszR@cluster0.tv2plhz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error(err));
 
-app.get('/todo/:sid',(req,response)=>{
-        const tid=req.params.sid
-        const todoo = todos.find(todos => todos.id==tid)
-        response.status(200).json(todoo)
-        //console.log(req.params)
-})
-
-app.get('/todos',(req,res)=>{
-    res.status(200).json(todos)
-})
-
-app.post('/todo',(req,res)=>{
-    todos = [...todos,req.body]
-    res.status(200).send("Added successfuly")
-})
-
-app.put('/todo/update', (req, res) => {
-    const { id, name, priority } = req.body;
-
-    const todo = todos.find(t => t.id == id);
-    if (!todo) {
-        return res.status(404).send("Todo not found");
-    }
-
-    todo.name = name;
-    todo.priority = priority;
-
-    res.status(200).send( "Updated successfully" );
+// Routes
+app.post('/todos', async (req, res) => {
+  try {
+    const todo = new Todo(req.body);
+    await todo.save();
+    res.status(201).send(todo);
+  } catch (err) {
+    res.status(400).send(err);
+  }
 });
 
-app.delete('/todo/delete',(req,res)=>{
-    const {id} = req.body
-    const exist = todos.some(todo => todo.id==id)
-    if(!exist){
-        res.status(404).send("task not found")
-    }
-    todos=todos.filter(t => t.id != id)
-    res.status(200).send("Deleted successfully")
-})
+app.get('/todos', async (req, res) => {
+  const todos = await Todo.find();
+  res.send(todos);
+});
 
-app.listen(port,()=>{
-    console.log(`server is running at ${port}`)
-})
-
+app.listen(3000, () => console.log("Server running on port 3000"));
