@@ -1,6 +1,5 @@
 const express = require("express");
 const connectDB = require("./db/database");
-const Todo = require("./models/todo"); // import schema
 require("dotenv").config();
 connectDB();
 const PORT= 5500

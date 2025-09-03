@@ -4,7 +4,10 @@ const Todo = require("../models/todo");
 
 route.post("/", async (req, res) => {
   try {
-    const todo = new Todo(req.body);
+    const lastTodo = await Todo.findOne().sort({ id: -1 });
+    const nextId = lastTodo ? lastTodo.id + 1 : 1;
+    const todo = new Todo({ ...req.body, id: nextId });
+
     await todo.save();
     res.status(201).send(todo);
   } catch (err) {
