@@ -43,9 +43,7 @@ route.put("/update/:id", async (req, res) => {
   const updates = req.body; // JSON with fields to update
 
   try {
-    const todo = await Todo.findOneAndUpdate({ id: id }, updates, {
-      new: true,
-    });
+    const todo = await Todo.findOneAndUpdate({ id: id }, updates, { new: true, });
 
     if (!todo) return res.status(404).send("Todo not found");
 
